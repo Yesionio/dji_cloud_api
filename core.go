@@ -240,6 +240,14 @@ func (dji *DjiCloudApiCore) serviceReplyHandler(c mqtt.Client, m mqtt.Message) {
 		if err := dji.WaylineModule.replyHandler(msg); err != nil {
 			dji.errHandler(err)
 		}
+	case "debug_mode_open", "debug_mode_close", "supplement_light_open", "supplement_light_close",
+		"battery_maintenance_switch", "air_conditioner_mode_switch", "alarm_state_switch",
+		"battery_store_mode_switch", "device_reboot", "drone_open", "drone_close", "device_format",
+		"drone_format", "cover_open", "cover_close", "charge_open", "charge_close", "sdr_workmode_switch",
+		"esim_activate", "sim_slot_switch", "esim_operator_switch":
+		if err := dji.DebugModule.replyHandler(msg); err != nil {
+			dji.errHandler(err)
+		}
 	}
 }
 
@@ -289,5 +297,10 @@ func (dji *DjiCloudApiCore) eventsHandler(c mqtt.Client, m mqtt.Message) {
 		if err := dji.HMSModule.hmsHandler(msg); err != nil {
 			dji.errHandler(err)
 		}
+	case "drone_open", "drone_close", "device_reboot", "cover_close", "cover_open", "charge_open", "charge_close", "drone_format", "device_format", "esim_activate", "esim_operator_switch":
+		if err := dji.DebugModule.debugEventHandler(msg); err != nil {
+			dji.errHandler(err)
+		}
+
 	}
 }
