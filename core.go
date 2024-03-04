@@ -26,10 +26,19 @@ type CloudApiOption struct {
 	MqttUsername        string
 	MqttPassword        string
 	ErrHandler          CloudApiErrHandler
+	// 时间同步服务器(ntp)地址 -> 机巢
+	NtpServerHost string
+	// 在DJI开发者网站的AppID -> 机巢
+	AppID string
+	// 在DJI开发者网站的Key -> 机巢
+	AppKey string
+	// 在DJI开发者网站的License -> 机巢
+	AppLicense string
 }
 
 type DjiCloudApiCore struct {
 	mqttOpt            *mqtt.ClientOptions
+	option             CloudApiOption
 	mqttClient         mqtt.Client
 	errHandler         CloudApiErrHandler
 	OrgManageModule    *OrgManageModule
@@ -104,6 +113,21 @@ func (dji *DjiCloudApiCore) djiSubscribe(c mqtt.Client) {
 	c.Subscribe("thing/product/+/drc/up", 0, func(c mqtt.Client, m mqtt.Message) {})
 }
 
+func (dji *DjiCloudApiCore) requestsConfigUpdate(msg *MessageData) error {
+	fmt.Println("call config update", string(msg.Payload.Data))
+	data := map[string]any{
+		"ntp_server_host": dji.option.NtpServerHost,
+		"app_id":          dji.option.AppID,
+		"app_key":         dji.option.AppKey,
+		"app_license":     dji.option.AppLicense,
+	}
+	err := sendOutput(dji.mqttClient, msg, &data, 0)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (dji *DjiCloudApiCore) requestHandler(c mqtt.Client, m mqtt.Message) {
 	topic := m.Topic()
 	topic = strings.ReplaceAll(topic, "thing/product/", "")
@@ -140,6 +164,10 @@ func (dji *DjiCloudApiCore) requestHandler(c mqtt.Client, m mqtt.Message) {
 		}
 	case "flighttask_resource_get":
 		if err = dji.WaylineModule.resourceGetHandler(msg); err != nil {
+			dji.errHandler(err)
+		}
+	case "config":
+		if err = dji.requestsConfigUpdate(msg); err != nil {
 			dji.errHandler(err)
 		}
 	}
