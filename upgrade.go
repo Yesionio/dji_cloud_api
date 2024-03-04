@@ -16,25 +16,6 @@ type UpgradeModule struct {
 	evtOtaProgress     FnEvtOtaProgress
 }
 
-func (um *UpgradeModule) otaEventHandler(msg *MessageData) error {
-	if um.evtOtaProgress != nil {
-		data := &CommonProgressData{}
-		err := json.Unmarshal(msg.Payload.Data, data)
-		if err != nil {
-			return err
-		}
-
-		um.evtOtaProgress(msg.SN, data)
-
-		err = sendEventReply(um.client, msg, 0)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (um *UpgradeModule) SetOnEvtOtaProgress(fn FnEvtOtaProgress) {
 	um.evtOtaProgress = fn
 }
@@ -57,6 +38,25 @@ func (um *UpgradeModule) OtaCreateAsync(sn string, param []ParamOtaCreate, callb
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (um *UpgradeModule) otaEventHandler(msg *MessageData) error {
+	if um.evtOtaProgress != nil {
+		data := &CommonProgressData{}
+		err := json.Unmarshal(msg.Payload.Data, data)
+		if err != nil {
+			return err
+		}
+
+		um.evtOtaProgress(msg.SN, data)
+
+		err = sendEventReply(um.client, msg, 0)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 

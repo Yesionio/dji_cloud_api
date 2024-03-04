@@ -40,6 +40,7 @@ type DjiCloudApiCore struct {
 	HMSModule          *HMSModule
 	DebugModule        *DebugModule
 	UpgradeModule      *UpgradeModule
+	RemoteLogModule    *RemoteLogModule
 }
 
 func NewCloudApi(opt CloudApiOption) *DjiCloudApiCore {
@@ -79,6 +80,7 @@ func loadModule(core *DjiCloudApiCore) {
 	core.HMSModule = newHMSModule(core.mqttClient)
 	core.DebugModule = newDebugModule(core.mqttClient)
 	core.UpgradeModule = newUpgradeModule(core.mqttClient)
+	core.RemoteLogModule = newRemoteLogModuleLog(core.mqttClient)
 }
 
 func (dji *DjiCloudApiCore) Run() error {
@@ -254,6 +256,10 @@ func (dji *DjiCloudApiCore) serviceReplyHandler(c mqtt.Client, m mqtt.Message) {
 		if err := dji.UpgradeModule.replyHandler(msg); err != nil {
 			dji.errHandler(err)
 		}
+	case "fileupload_list", "fileupload_start", "fileupload_update":
+		if err := dji.RemoteLogModule.replyHandler(msg); err != nil {
+			dji.errHandler(err)
+		}
 	}
 }
 
@@ -309,6 +315,10 @@ func (dji *DjiCloudApiCore) eventsHandler(c mqtt.Client, m mqtt.Message) {
 		}
 	case "ota_progress":
 		if err := dji.UpgradeModule.otaEventHandler(msg); err != nil {
+			dji.errHandler(err)
+		}
+	case "fileupload_progress":
+		if err := dji.RemoteLogModule.remoteLogEventHandler(msg); err != nil {
 			dji.errHandler(err)
 		}
 	}
