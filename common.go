@@ -34,5 +34,15 @@ type ReplyStatusData struct {
 	Status string `json:"status"`
 }
 
+type CommonProgressData struct {
+	Status   string               `json:"status"`
+	Progress CommonProgressDetail `json:"progress"`
+}
+
+type CommonProgressDetail struct {
+	Percent int    `json:"percent"`
+	StepKey string `json:"step_key"`
+}
+
 type FnServiceCallbackResult func(result int)
 type FnServiceCallbackStatus func(status string)

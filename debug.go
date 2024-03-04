@@ -7,17 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type DebugProgressData struct {
-	Status   string              `json:"status"`
-	Progress DebugProgressDetail `json:"progress"`
-}
-
-type DebugProgressDetail struct {
-	Percent int    `json:"percent"`
-	StepKey string `json:"step_key"`
-}
-
-type FnEvtDebugProgress func(sn, event string, data *DebugProgressData)
+type FnEvtDebugProgress func(sn, event string, data *CommonProgressData)
 
 type DebugModule struct {
 	client             mqtt.Client
@@ -181,7 +171,7 @@ func (dbg *DebugModule) sendStructure(sn, command string, callback FnServiceCall
 
 func (dbg *DebugModule) debugEventHandler(msg *MessageData) error {
 	if dbg.evtDebugProgress != nil {
-		data := &DebugProgressData{}
+		data := &CommonProgressData{}
 		err := json.Unmarshal(msg.Payload.Data, data)
 		if err != nil {
 			return err

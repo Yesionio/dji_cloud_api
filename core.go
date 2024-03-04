@@ -39,6 +39,7 @@ type DjiCloudApiCore struct {
 	WaylineModule      *WaylineModule
 	HMSModule          *HMSModule
 	DebugModule        *DebugModule
+	UpgradeModule      *UpgradeModule
 }
 
 func NewCloudApi(opt CloudApiOption) *DjiCloudApiCore {
@@ -77,6 +78,7 @@ func loadModule(core *DjiCloudApiCore) {
 	core.WaylineModule = newWaylineModule(core.mqttClient)
 	core.HMSModule = newHMSModule(core.mqttClient)
 	core.DebugModule = newDebugModule(core.mqttClient)
+	core.UpgradeModule = newUpgradeModule(core.mqttClient)
 }
 
 func (dji *DjiCloudApiCore) Run() error {
@@ -248,6 +250,10 @@ func (dji *DjiCloudApiCore) serviceReplyHandler(c mqtt.Client, m mqtt.Message) {
 		if err := dji.DebugModule.replyHandler(msg); err != nil {
 			dji.errHandler(err)
 		}
+	case "ota_create":
+		if err := dji.UpgradeModule.replyHandler(msg); err != nil {
+			dji.errHandler(err)
+		}
 	}
 }
 
@@ -301,6 +307,9 @@ func (dji *DjiCloudApiCore) eventsHandler(c mqtt.Client, m mqtt.Message) {
 		if err := dji.DebugModule.debugEventHandler(msg); err != nil {
 			dji.errHandler(err)
 		}
-
+	case "ota_progress":
+		if err := dji.UpgradeModule.otaEventHandler(msg); err != nil {
+			dji.errHandler(err)
+		}
 	}
 }
