@@ -260,7 +260,7 @@ func (wm *WaylineModule) replyHandler(msg *MessageData) error {
 		if err != nil {
 			return err
 		}
-		fn(status.Status)
+		fn(status.Output.Status)
 		delete(wm.callbackStatusList, msg.Payload.Tid)
 	}
 	return nil

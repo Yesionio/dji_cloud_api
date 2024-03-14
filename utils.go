@@ -2,6 +2,7 @@ package djicloudapi
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -9,6 +10,7 @@ import (
 )
 
 func sendOutput(client mqtt.Client, msg *MessageData, data any, result int) error {
+	fmt.Println("return output is ", data)
 	pubData := CommonData[CommonOutPutData]{
 		Tid:       msg.Payload.Tid,
 		Bid:       msg.Payload.Bid,
@@ -76,7 +78,7 @@ func sendService(client mqtt.Client, sn, tid, method string, data any) error {
 		return err
 	}
 
-	t := client.Publish("thing/product/"+sn+"services", 0, false, marData)
+	t := client.Publish("thing/product/"+sn+"/services", 0, false, marData)
 	if ok := t.WaitTimeout(time.Second * 10); !ok || t.Error() != nil {
 		return t.Error()
 	}

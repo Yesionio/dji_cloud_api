@@ -31,7 +31,10 @@ type ReplyResultData struct {
 }
 
 type ReplyStatusData struct {
-	Status string `json:"status"`
+	Output struct {
+		Status string `json:"status"`
+	} `json:"output"`
+	Result int `json:"result"`
 }
 
 type CommonProgressData struct {

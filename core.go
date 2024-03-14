@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
@@ -74,6 +75,7 @@ func NewCloudApi(opt CloudApiOption) *DjiCloudApiCore {
 
 	core.mqttClient = mqtt.NewClient(mqttOpt)
 	core.errHandler = opt.ErrHandler
+	core.option = opt
 
 	loadModule(core)
 
@@ -111,6 +113,24 @@ func (dji *DjiCloudApiCore) djiSubscribe(c mqtt.Client) {
 	c.Subscribe("sys/product/+/status", 0, dji.statusHandler)
 	c.Subscribe("thing/product/+/property/set_reply", 0, func(c mqtt.Client, m mqtt.Message) {})
 	c.Subscribe("thing/product/+/drc/up", 0, func(c mqtt.Client, m mqtt.Message) {})
+
+	dji.DebugModule.DebugModeOpenAsync("7CTDM2100BH29T", func(status string) {
+		fmt.Println("open debug status is ", status)
+
+		// dji.DebugModule.DroneCloseAsync("7CTDM2100BH29T", func(status string) {
+		// 	fmt.Println("关闭飞行器", status)
+		// dji.DebugModule.ChargeCloseAsync("7CTDM2100BH29T", func(status string) {
+		// 	fmt.Println("关闭充电", status)
+		// })
+		dji.DebugModule.AirConditionerModeSwitchAsync("7CTDM2100BH29T", 0, func(status string) {
+			fmt.Println("关闭空调", status)
+
+			dji.DebugModule.DebugModeCloseAsync("7CTDM2100BH29T", func(status string) {
+				fmt.Println("close debug status is ", status)
+			})
+		})
+		// })
+	})
 }
 
 func (dji *DjiCloudApiCore) requestsConfigUpdate(msg *MessageData) error {
@@ -121,9 +141,25 @@ func (dji *DjiCloudApiCore) requestsConfigUpdate(msg *MessageData) error {
 		"app_key":         dji.option.AppKey,
 		"app_license":     dji.option.AppLicense,
 	}
-	err := sendOutput(dji.mqttClient, msg, &data, 0)
+	r, err := json.Marshal(&data)
 	if err != nil {
 		return err
+	}
+	pubData := CommonData[json.RawMessage]{
+		Tid:       msg.Payload.Tid,
+		Bid:       msg.Payload.Bid,
+		Timestamp: time.Now().Unix(),
+		Gateway:   msg.Payload.Gateway,
+		Method:    msg.Payload.Method,
+		Data:      r,
+	}
+	marData, err := json.Marshal(pubData)
+	if err != nil {
+		return err
+	}
+	t := dji.mqttClient.Publish(msg.Topic+REPLY_SUFFIX, 0, false, marData)
+	if ok := t.WaitTimeout(time.Second * 10); !ok || t.Error() != nil {
+		return t.Error()
 	}
 	return nil
 }
@@ -141,7 +177,7 @@ func (dji *DjiCloudApiCore) requestHandler(c mqtt.Client, m mqtt.Message) {
 
 	msg := &MessageData{
 		SN:      sn,
-		Topic:   topic,
+		Topic:   m.Topic(),
 		Payload: data.CommonData,
 	}
 
@@ -186,7 +222,7 @@ func (dji *DjiCloudApiCore) osdHandler(c mqtt.Client, m mqtt.Message) {
 
 	msg := &MessageData{
 		SN:      sn,
-		Topic:   topic,
+		Topic:   m.Topic(),
 		Payload: data.CommonData,
 	}
 
@@ -208,7 +244,7 @@ func (dji *DjiCloudApiCore) stateHandler(c mqtt.Client, m mqtt.Message) {
 
 	msg := &MessageData{
 		SN:      sn,
-		Topic:   topic,
+		Topic:   m.Topic(),
 		Payload: data.CommonData,
 	}
 
@@ -230,7 +266,7 @@ func (dji *DjiCloudApiCore) statusHandler(c mqtt.Client, m mqtt.Message) {
 
 	msg := &MessageData{
 		SN:      sn,
-		Topic:   topic,
+		Topic:   m.Topic(),
 		Payload: data.CommonData,
 	}
 
@@ -255,7 +291,7 @@ func (dji *DjiCloudApiCore) serviceReplyHandler(c mqtt.Client, m mqtt.Message) {
 
 	msg := &MessageData{
 		SN:      sn,
-		Topic:   topic,
+		Topic:   m.Topic(),
 		Payload: data.CommonData,
 	}
 
@@ -304,7 +340,7 @@ func (dji *DjiCloudApiCore) eventsHandler(c mqtt.Client, m mqtt.Message) {
 
 	msg := &MessageData{
 		SN:      sn,
-		Topic:   topic,
+		Topic:   m.Topic(),
 		Payload: data.CommonData,
 	}
 

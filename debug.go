@@ -196,7 +196,7 @@ func (dgb *DebugModule) replyHandler(msg *MessageData) error {
 		if err != nil {
 			return err
 		}
-		fn(status.Status)
+		fn(status.Output.Status)
 		delete(dgb.callbackStatusList, msg.Payload.Tid)
 	}
 	return nil

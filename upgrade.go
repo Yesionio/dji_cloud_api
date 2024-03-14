@@ -68,7 +68,7 @@ func (um *UpgradeModule) replyHandler(msg *MessageData) error {
 		if err != nil {
 			return err
 		}
-		fn(status.Status)
+		fn(status.Output.Status)
 		delete(um.callbackStatusList, msg.Payload.Tid)
 	}
 	return nil

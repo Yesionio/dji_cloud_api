@@ -48,9 +48,9 @@ type DockOsdSubDeviceData struct {
 }
 
 type DockOsdNetworkStateData struct {
-	Type    int `json:"type"`
-	Quality int `json:"quality"`
-	Rate    int `json:"rate"`
+	Type    int     `json:"type"`
+	Quality int     `json:"quality"`
+	Rate    float64 `json:"rate"`
 }
 
 type DockOsdMediaFileDetailData struct {
