@@ -122,8 +122,8 @@ func (dji *DjiCloudApiCore) djiSubscribe(c mqtt.Client) {
 		// dji.DebugModule.ChargeCloseAsync("7CTDM2100BH29T", func(status string) {
 		// 	fmt.Println("关闭充电", status)
 		// })
-		dji.DebugModule.AirConditionerModeSwitchAsync("7CTDM2100BH29T", 0, func(status string) {
-			fmt.Println("关闭空调", status)
+		dji.DebugModule.DroneOpenAsync("7CTDM2100BH29T", func(status string) {
+			fmt.Println("打开飞机", status)
 
 			dji.DebugModule.DebugModeCloseAsync("7CTDM2100BH29T", func(status string) {
 				fmt.Println("close debug status is ", status)

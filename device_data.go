@@ -40,6 +40,12 @@ type DockOsdData struct {
 	DrcState                    int                                    `json:"drc_state"`
 }
 
+type OsdDataPack1 struct {
+	JobNumber      int `json:"job_number"`
+	AccTime        int `json:"acc_time"`
+	ActivationTime int `json:"activation_time"`
+}
+
 type DockOsdSubDeviceData struct {
 	DeviceSN           string `json:"device_sn"`
 	ProductType        string `json:"product_type"`
