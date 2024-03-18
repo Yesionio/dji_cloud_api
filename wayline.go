@@ -186,13 +186,13 @@ func (wm *WaylineModule) flighttaskProgressHandler(msg *MessageData) error {
 
 func (wm *WaylineModule) flightTaskReadyHandler(msg *MessageData) error {
 	if wm.evtFlightTaskReady != nil {
-		data := &WaylineFlightProgress{}
+		data := &WaylineFlightTaskReady{}
 		err := json.Unmarshal(msg.Payload.Data, data)
 		if err != nil {
 			return err
 		}
 
-		wm.evtFlighttaskProgress(msg.SN, data)
+		wm.evtFlightTaskReady(msg.SN, data)
 
 		err = sendEventReply(wm.client, msg, 0)
 		if err != nil {
