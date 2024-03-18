@@ -167,7 +167,7 @@ func (wm *WaylineModule) deviceExitHomingNotifyHandler(msg *MessageData) error {
 }
 
 func (wm *WaylineModule) flighttaskProgressHandler(msg *MessageData) error {
-	if wm.evtDeviceExitHomingNotify != nil {
+	if wm.evtFlighttaskProgress != nil {
 		data := &WaylineFlightProgress{}
 		err := json.Unmarshal(msg.Payload.Data, data)
 		if err != nil {
@@ -185,7 +185,7 @@ func (wm *WaylineModule) flighttaskProgressHandler(msg *MessageData) error {
 }
 
 func (wm *WaylineModule) flightTaskReadyHandler(msg *MessageData) error {
-	if wm.evtDeviceExitHomingNotify != nil {
+	if wm.evtFlightTaskReady != nil {
 		data := &WaylineFlightProgress{}
 		err := json.Unmarshal(msg.Payload.Data, data)
 		if err != nil {
@@ -203,7 +203,7 @@ func (wm *WaylineModule) flightTaskReadyHandler(msg *MessageData) error {
 }
 
 func (wm *WaylineModule) returnHomeInfoHandler(msg *MessageData) error {
-	if wm.evtDeviceExitHomingNotify != nil {
+	if wm.evtReturnHomeInfo != nil {
 		data := &WaylineReturnHomeInfo{}
 		err := json.Unmarshal(msg.Payload.Data, data)
 		if err != nil {
