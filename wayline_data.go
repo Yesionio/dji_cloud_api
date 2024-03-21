@@ -44,9 +44,9 @@ type WaylineFlightTaskReady struct {
 }
 
 type WaylineReturnHomeInfo struct {
-	PlannedPathPoints WaylinePlannedPathPoint `json:"planned_path_points"`
-	LastPointType     int                     `json:"last_point_type"`
-	FlightID          string                  `json:"flight_id"`
+	PlannedPathPoints []WaylinePlannedPathPoint `json:"planned_path_points"`
+	LastPointType     int                       `json:"last_point_type"`
+	FlightID          string                    `json:"flight_id"`
 }
 
 type WaylinePlannedPathPoint struct {
@@ -56,19 +56,19 @@ type WaylinePlannedPathPoint struct {
 }
 
 type ParamFlightTaskPrepare struct {
-	FlightID              string                         `json:"flight_id"`
-	ExecuteTime           int64                          `json:"execute_time"`
-	TaskType              int                            `json:"task_type"`
-	File                  ParamFlightTaskPrepareFile     `json:"file"`
-	ReadyConditions       ParamFlightTaskReadyCond       `json:"ready_conditions"`
-	ExecutableConditions  ParamFlightTaskExecCond        `json:"executable_conditions"`
-	BreakPoint            ParamFlightTaskBreakPoint      `json:"break_point"`
-	RthAltitude           int                            `json:"rth_altitude"`
-	RthMode               int                            `json:"rth_mode"`
-	OutOfControlAction    int                            `json:"out_of_control_action"`
-	ExitWaylineWhenRcLost int                            `json:"exit_wayline_when_rc_lost"`
-	WaylinePrecisionType  int                            `json:"wayline_precision_type"`
-	SimulateMission       ParamFlightTaskSimulateMission `json:"simulate_mission"`
+	FlightID              string                          `json:"flight_id"`
+	ExecuteTime           int64                           `json:"execute_time"`
+	TaskType              int                             `json:"task_type"`
+	File                  ParamFlightTaskPrepareFile      `json:"file"`
+	ReadyConditions       *ParamFlightTaskReadyCond       `json:"ready_conditions,omitempty"`
+	ExecutableConditions  *ParamFlightTaskExecCond        `json:"executable_conditions,omitempty"`
+	BreakPoint            *ParamFlightTaskBreakPoint      `json:"break_point,omitempty"`
+	RthAltitude           int                             `json:"rth_altitude"`
+	RthMode               int                             `json:"rth_mode"`
+	OutOfControlAction    int                             `json:"out_of_control_action"`
+	ExitWaylineWhenRcLost int                             `json:"exit_wayline_when_rc_lost"`
+	WaylinePrecisionType  int                             `json:"wayline_precision_type"`
+	SimulateMission       *ParamFlightTaskSimulateMission `json:"simulate_mission,omitempty"`
 }
 
 type ParamFlightTaskPrepareFile struct {
@@ -77,9 +77,9 @@ type ParamFlightTaskPrepareFile struct {
 }
 
 type ParamFlightTaskReadyCond struct {
-	BatteryCapacity int `json:"battery_capacity"`
-	BeginTime       int `json:"begin_time"`
-	EndTime         int `json:"end_time"`
+	BatteryCapacity int   `json:"battery_capacity"`
+	BeginTime       int64 `json:"begin_time"`
+	EndTime         int64 `json:"end_time"`
 }
 
 type ParamFlightTaskExecCond struct {

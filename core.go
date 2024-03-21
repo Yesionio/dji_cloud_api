@@ -113,24 +113,6 @@ func (dji *DjiCloudApiCore) djiSubscribe(c mqtt.Client) {
 	c.Subscribe("sys/product/+/status", 0, dji.statusHandler)
 	c.Subscribe("thing/product/+/property/set_reply", 0, func(c mqtt.Client, m mqtt.Message) {})
 	c.Subscribe("thing/product/+/drc/up", 0, func(c mqtt.Client, m mqtt.Message) {})
-
-	dji.DebugModule.DebugModeOpenAsync("7CTDM2100BH29T", func(status string) {
-		fmt.Println("open debug status is ", status)
-
-		// dji.DebugModule.DroneCloseAsync("7CTDM2100BH29T", func(status string) {
-		// 	fmt.Println("关闭飞行器", status)
-		// dji.DebugModule.ChargeCloseAsync("7CTDM2100BH29T", func(status string) {
-		// 	fmt.Println("关闭充电", status)
-		// })
-		dji.DebugModule.DroneOpenAsync("7CTDM2100BH29T", func(status string) {
-			fmt.Println("打开飞机", status)
-
-			dji.DebugModule.DebugModeCloseAsync("7CTDM2100BH29T", func(status string) {
-				fmt.Println("close debug status is ", status)
-			})
-		})
-		// })
-	})
 }
 
 func (dji *DjiCloudApiCore) requestsConfigUpdate(msg *MessageData) error {
